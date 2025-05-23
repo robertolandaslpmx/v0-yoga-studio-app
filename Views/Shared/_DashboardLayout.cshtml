@@ -1,0 +1,262 @@
+@{
+    Layout = "_Layout";
+    var currentPath = Context.Request.Path;
+    var userRole = Context.Session.GetString("UserRole") ?? "Student";
+    var userName = Context.Session.GetString("UserName") ?? "Usuario";
+}
+
+<div class="min-h-screen bg-purple-50 pb-20">
+    <!-- Header -->
+    <header class="bg-white shadow-sm fixed-top">
+        <div class="container-fluid px-4">
+            <div class="d-flex justify-content-between align-items-center py-3">
+                <a href="@Url.Action("Index", "Dashboard")" class="h5 fw-bold text-purple-600 text-decoration-none mb-0">
+                    <i class="fas fa-om me-2"></i>Estudio de Yoga
+                </a>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="d-none d-md-flex align-items-center gap-2">
+                        <div class="avatar">
+                            <img src="/images/placeholder.jpg" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px;" />
+                        </div>
+                        <div>
+                            <p class="mb-0 small fw-medium">@userName</p>
+                            <p class="mb-0 small text-muted">
+                                @(userRole == "Admin" ? "Administrador" : userRole == "Teacher" ? "Docente" : "Alumno")
+                            </p>
+                        </div>
+                        <!-- Indicador de rol -->
+                        @if (userRole == "Admin")
+                        {
+                            <span class="badge bg-danger ms-2">
+                                <i class="fas fa-user-shield me-1"></i>Admin
+                            </span>
+                        }
+                        else if (userRole == "Teacher")
+                        {
+                            <span class="badge bg-warning text-dark ms-2">
+                                <i class="fas fa-chalkboard-teacher me-1"></i>Docente
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success ms-2">
+                                <i class="fas fa-user-graduate me-1"></i>Alumno
+                            </span>
+                        }
+                    </div>
+                    <button class="btn d-md-none" id="mobileMenuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile menu -->
+    <div class="d-md-none bg-white border-bottom mobile-menu" style="position: fixed; top: 64px; left: 0; right: 0; display: none; z-index: 20;">
+        <div class="container-fluid px-4 py-2">
+            <nav class="d-flex flex-column">
+                @if (userRole == "Admin")
+                {
+                    <a href="@Url.Action("Index", "Admin")" class="d-flex align-items-center px-3 py-2 rounded-md small fw-medium @(currentPath.Contains("/Admin") && !currentPath.Contains("/Admin/") ? "bg-purple-100 text-purple-600" : "text-muted hover-purple")">
+                        <i class="fas fa-tachometer-alt me-3"></i> Dashboard Admin
+                    </a>
+                    <a href="@Url.Action("Courses", "Admin")" class="d-flex align-items-center px-3 py-2 rounded-md small fw-medium @(currentPath.Contains("/Admin/Courses") ? "bg-purple-100 text-purple-600" : "text-muted hover-purple")">
+                        <i class="fas fa-book-open me-3"></i> Gestión de Cursos
+                    </a>
+                    <a href="@Url.Action("Teachers", "Admin")" class="d-flex align-items-center px-3 py-2 rounded-md small fw-medium @(currentPath.Contains("/Admin/Teachers") ? "bg-purple-100 text-purple-600" : "text-muted hover-purple")">
+                        <i class="fas fa-chalkboard-teacher me-3"></i> Gestión de Docentes
+                    </a>
+                    <a href="@Url.Action("PaymentReports", "Admin")" class="d-flex align-items-center px-3 py-2 rounded-md small fw-medium @(currentPath.Contains("/Admin/PaymentReports") ? "bg-purple-100 text-purple-600" : "text-muted hover-purple")">
+                        <i class="fas fa-chart-bar me-3"></i> Informes de Pagos
+                    </a>
+                }
+                else if (userRole == "Teacher")
+                {
+                    <a href="@Url.Action("Index", "Teacher")" class="d-flex align-items-center px-3 py-2 rounded-md small fw-medium @(currentPath.Contains("/Teacher") && !currentPath.Contains("/Teacher/") ? "bg-purple-100 text-purple-600" : "text-muted hover-purple")">
+                        <i class="fas fa-tachometer-alt me-3"></i> Dashboard Docente
+                    </a>
+                    <a href="@Url.Action("Courses", "Teacher")" class="d-flex align-items-center px-3 py-2 rounded-md small fw-medium @(currentPath.Contains("/Teacher/Courses") ? "bg-purple-100 text-purple-600" : "text-muted hover-purple")">
+                        <i class="fas fa-book-open me-3"></i> Mis Cursos
+                    </a>
+                    <a href="@Url.Action("Schedule", "Teacher")" class="d-flex align-items-center px-3 py-2 rounded-md small fw-medium @(currentPath.Contains("/Teacher/Schedule") ? "bg-purple-100 text-purple-600" : "text-muted hover-purple")">
+                        <i class="fas fa-calendar me-3"></i> Mi Horario
+                    </a>
+                }
+                else
+                {
+                    <a href="@Url.Action("Index", "Dashboard")" class="d-flex align-items-center px-3 py-2 rounded-md small fw-medium @(currentPath.Contains("/Dashboard") && !currentPath.Contains("/Dashboard/") ? "bg-purple-100 text-purple-600" : "text-muted hover-purple")">
+                        <i class="fas fa-tachometer-alt me-3"></i> Dashboard
+                    </a>
+                }
+                
+                <!-- Navegación común para todos los roles -->
+                <a href="@Url.Action("Index", "Reservations")" class="d-flex align-items-center px-3 py-2 rounded-md small fw-medium @(currentPath.Contains("/Reservations") ? "bg-purple-100 text-purple-600" : "text-muted hover-purple")">
+                    <i class="fas fa-calendar me-3"></i> Reservaciones
+                </a>
+                <a href="@Url.Action("Index", "Classes")" class="d-flex align-items-center px-3 py-2 rounded-md small fw-medium @(currentPath.Contains("/Classes") ? "bg-purple-100 text-purple-600" : "text-muted hover-purple")">
+                    <i class="fas fa-book-open me-3"></i> Mis Clases
+                </a>
+                <a href="@Url.Action("Index", "Payments")" class="d-flex align-items-center px-3 py-2 rounded-md small fw-medium @(currentPath.Contains("/Payments") ? "bg-purple-100 text-purple-600" : "text-muted hover-purple")">
+                    <i class="fas fa-credit-card me-3"></i> Pagos
+                </a>
+                <a href="@Url.Action("Index", "Profile")" class="d-flex align-items-center px-3 py-2 rounded-md small fw-medium @(currentPath.Contains("/Profile") ? "bg-purple-100 text-purple-600" : "text-muted hover-purple")">
+                    <i class="fas fa-user me-3"></i> Perfil
+                </a>
+                
+                <div class="border-top pt-2 mt-2">
+                    <a href="@Url.Action("Logout", "Account")" class="d-flex align-items-center px-3 py-2 rounded-md small fw-medium text-muted hover-purple">
+                        <i class="fas fa-sign-out-alt me-3"></i> Cerrar Sesión
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main content -->
+    <main class="container-fluid px-4 py-4" style="margin-top: 80px;">
+        @RenderBody()
+    </main>
+
+    <!-- Desktop sidebar -->
+    <div class="d-none d-md-block bg-white rounded-lg shadow-md overflow-auto" style="position: fixed; top: 80px; left: 16px; bottom: 80px; width: 280px; z-index: 10;">
+        <div class="p-4">
+            <nav class="d-flex flex-column gap-2">
+                @if (userRole == "Admin")
+                {
+                    <a href="@Url.Action("Index", "Admin")" class="d-flex align-items-center px-3 py-2 rounded-md small fw-medium @(currentPath.Contains("/Admin") && !currentPath.Contains("/Admin/") ? "bg-purple-100 text-purple-600" : "text-muted hover-purple")">
+                        <i class="fas fa-tachometer-alt me-3"></i> Dashboard Admin
+                    </a>
+                    <a href="@Url.Action("Courses", "Admin")" class="d-flex align-items-center px-3 py-2 rounded-md small fw-medium @(currentPath.Contains("/Admin/Courses") ? "bg-purple-100 text-purple-600" : "text-muted hover-purple")">
+                        <i class="fas fa-book-open me-3"></i> Gestión de Cursos
+                    </a>
+                    <a href="@Url.Action("Teachers", "Admin")" class="d-flex align-items-center px-3 py-2 rounded-md small fw-medium @(currentPath.Contains("/Admin/Teachers") ? "bg-purple-100 text-purple-600" : "text-muted hover-purple")">
+                        <i class="fas fa-chalkboard-teacher me-3"></i> Gestión de Docentes
+                    </a>
+                    <a href="@Url.Action("PaymentReports", "Admin")" class="d-flex align-items-center px-3 py-2 rounded-md small fw-medium @(currentPath.Contains("/Admin/PaymentReports") ? "bg-purple-100 text-purple-600" : "text-muted hover-purple")">
+                        <i class="fas fa-chart-bar me-3"></i> Informes de Pagos
+                    </a>
+                }
+                else if (userRole == "Teacher")
+                {
+                    <a href="@Url.Action("Index", "Teacher")" class="d-flex align-items-center px-3 py-2 rounded-md small fw-medium @(currentPath.Contains("/Teacher") && !currentPath.Contains("/Teacher/") ? "bg-purple-100 text-purple-600" : "text-muted hover-purple")">
+                        <i class="fas fa-tachometer-alt me-3"></i> Dashboard Docente
+                    </a>
+                    <a href="@Url.Action("Courses", "Teacher")" class="d-flex align-items-center px-3 py-2 rounded-md small fw-medium @(currentPath.Contains("/Teacher/Courses") ? "bg-purple-100 text-purple-600" : "text-muted hover-purple")">
+                        <i class="fas fa-book-open me-3"></i> Mis Cursos
+                    </a>
+                    <a href="@Url.Action("Schedule", "Teacher")" class="d-flex align-items-center px-3 py-2 rounded-md small fw-medium @(currentPath.Contains("/Teacher/Schedule") ? "bg-purple-100 text-purple-600" : "text-muted hover-purple")">
+                        <i class="fas fa-calendar me-3"></i> Mi Horario
+                    </a>
+                }
+                else
+                {
+                    <a href="@Url.Action("Index", "Dashboard")" class="d-flex align-items-center px-3 py-2 rounded-md small fw-medium @(currentPath.Contains("/Dashboard") && !currentPath.Contains("/Dashboard/") ? "bg-purple-100 text-purple-600" : "text-muted hover-purple")">
+                        <i class="fas fa-tachometer-alt me-3"></i> Dashboard
+                    </a>
+                }
+                
+                <!-- Navegación común para todos los roles -->
+                <a href="@Url.Action("Index", "Reservations")" class="d-flex align-items-center px-3 py-2 rounded-md small fw-medium @(currentPath.Contains("/Reservations") ? "bg-purple-100 text-purple-600" : "text-muted hover-purple")">
+                    <i class="fas fa-calendar me-3"></i> Reservaciones
+                </a>
+                <a href="@Url.Action("Index", "Classes")" class="d-flex align-items-center px-3 py-2 rounded-md small fw-medium @(currentPath.Contains("/Classes") ? "bg-purple-100 text-purple-600" : "text-muted hover-purple")">
+                    <i class="fas fa-book-open me-3"></i> Mis Clases
+                </a>
+                <a href="@Url.Action("Index", "Payments")" class="d-flex align-items-center px-3 py-2 rounded-md small fw-medium @(currentPath.Contains("/Payments") ? "bg-purple-100 text-purple-600" : "text-muted hover-purple")">
+                    <i class="fas fa-credit-card me-3"></i> Pagos
+                </a>
+                <a href="@Url.Action("Index", "Profile")" class="d-flex align-items-center px-3 py-2 rounded-md small fw-medium @(currentPath.Contains("/Profile") ? "bg-purple-100 text-purple-600" : "text-muted hover-purple")">
+                    <i class="fas fa-user me-3"></i> Perfil
+                </a>
+                
+                <div class="border-top pt-3 mt-3">
+                    <a href="@Url.Action("Logout", "Account")" class="d-flex align-items-center px-3 py-2 rounded-md small fw-medium text-muted hover-purple">
+                        <i class="fas fa-sign-out-alt me-3"></i> Cerrar Sesión
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Footer navigation - visible on all screens -->
+    <footer class="fixed-bottom bg-white border-top shadow-lg" style="z-index: 30;">
+        <div class="d-grid" style="grid-template-columns: repeat(4, 1fr); height: 64px;">
+            @if (userRole == "Admin")
+            {
+                <a href="@Url.Action("Index", "Admin")" class="d-flex flex-column align-items-center justify-content-center @(currentPath.Contains("/Admin") && !currentPath.Contains("/Admin/") ? "text-purple-600 bg-purple-50" : "text-muted hover-purple")">
+                    <i class="fas fa-tachometer-alt" style="font-size: 1.5rem;"></i>
+                    <span class="small mt-1 fw-medium">Dashboard</span>
+                </a>
+                <a href="@Url.Action("Courses", "Admin")" class="d-flex flex-column align-items-center justify-content-center @(currentPath.Contains("/Admin/Courses") ? "text-purple-600 bg-purple-50" : "text-muted hover-purple")">
+                    <i class="fas fa-book-open" style="font-size: 1.5rem;"></i>
+                    <span class="small mt-1 fw-medium">Cursos</span>
+                </a>
+                <a href="@Url.Action("Teachers", "Admin")" class="d-flex flex-column align-items-center justify-content-center @(currentPath.Contains("/Admin/Teachers") ? "text-purple-600 bg-purple-50" : "text-muted hover-purple")">
+                    <i class="fas fa-chalkboard-teacher" style="font-size: 1.5rem;"></i>
+                    <span class="small mt-1 fw-medium">Docentes</span>
+                </a>
+                <a href="@Url.Action("PaymentReports", "Admin")" class="d-flex flex-column align-items-center justify-content-center @(currentPath.Contains("/Admin/PaymentReports") ? "text-purple-600 bg-purple-50" : "text-muted hover-purple")">
+                    <i class="fas fa-chart-bar" style="font-size: 1.5rem;"></i>
+                    <span class="small mt-1 fw-medium">Informes</span>
+                </a>
+            }
+            else if (userRole == "Teacher")
+            {
+                <a href="@Url.Action("Index", "Teacher")" class="d-flex flex-column align-items-center justify-content-center @(currentPath.Contains("/Teacher") && !currentPath.Contains("/Teacher/") ? "text-purple-600 bg-purple-50" : "text-muted hover-purple")">
+                    <i class="fas fa-tachometer-alt" style="font-size: 1.5rem;"></i>
+                    <span class="small mt-1 fw-medium">Dashboard</span>
+                </a>
+                <a href="@Url.Action("Courses", "Teacher")" class="d-flex flex-column align-items-center justify-content-center @(currentPath.Contains("/Teacher/Courses") ? "text-purple-600 bg-purple-50" : "text-muted hover-purple")">
+                    <i class="fas fa-book-open" style="font-size: 1.5rem;"></i>
+                    <span class="small mt-1 fw-medium">Mis Cursos</span>
+                </a>
+                <a href="@Url.Action("Schedule", "Teacher")" class="d-flex flex-column align-items-center justify-content-center @(currentPath.Contains("/Teacher/Schedule") ? "text-purple-600 bg-purple-50" : "text-muted hover-purple")">
+                    <i class="fas fa-calendar" style="font-size: 1.5rem;"></i>
+                    <span class="small mt-1 fw-medium">Horario</span>
+                </a>
+                <a href="@Url.Action("Index", "Profile")" class="d-flex flex-column align-items-center justify-content-center @(currentPath.Contains("/Profile") ? "text-purple-600 bg-purple-50" : "text-muted hover-purple")">
+                    <i class="fas fa-user" style="font-size: 1.5rem;"></i>
+                    <span class="small mt-1 fw-medium">Perfil</span>
+                </a>
+            }
+            else
+            {
+                <a href="@Url.Action("Index", "Reservations")" class="d-flex flex-column align-items-center justify-content-center @(currentPath.Contains("/Reservations") ? "text-purple-600 bg-purple-50" : "text-muted hover-purple")">
+                    <i class="fas fa-calendar" style="font-size: 1.5rem;"></i>
+                    <span class="small mt-1 fw-medium">Reservaciones</span>
+                </a>
+                <a href="@Url.Action("Index", "Classes")" class="d-flex flex-column align-items-center justify-content-center @(currentPath.Contains("/Classes") ? "text-purple-600 bg-purple-50" : "text-muted hover-purple")">
+                    <i class="fas fa-book-open" style="font-size: 1.5rem;"></i>
+                    <span class="small mt-1 fw-medium">Mis Clases</span>
+                </a>
+                <a href="@Url.Action("Index", "Payments")" class="d-flex flex-column align-items-center justify-content-center @(currentPath.Contains("/Payments") ? "text-purple-600 bg-purple-50" : "text-muted hover-purple")">
+                    <i class="fas fa-credit-card" style="font-size: 1.5rem;"></i>
+                    <span class="small mt-1 fw-medium">Pagos</span>
+                </a>
+                <a href="@Url.Action("Index", "Profile")" class="d-flex flex-column align-items-center justify-content-center @(currentPath.Contains("/Profile") ? "text-purple-600 bg-purple-50" : "text-muted hover-purple")">
+                    <i class="fas fa-user" style="font-size: 1.5rem;"></i>
+                    <span class="small mt-1 fw-medium">Perfil</span>
+                </a>
+            }
+        </div>
+    </footer>
+</div>
+
+@await RenderSectionAsync("Scripts", required: false)
+
+<script>
+    $(document).ready(function() {
+        // Toggle mobile menu
+        $("#mobileMenuToggle").click(function() {
+            $(".mobile-menu").slideToggle();
+            $(this).find("i").toggleClass("fa-bars fa-times");
+        });
+        
+        // Cerrar menú móvil al hacer clic en un enlace
+        $(".mobile-menu a").click(function() {
+            $(".mobile-menu").slideUp();
+            $("#mobileMenuToggle").find("i").removeClass("fa-times").addClass("fa-bars");
+        });
+    });
+</script>

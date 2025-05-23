@@ -1,0 +1,298 @@
+@model YogaStudioApp.Controllers.ReservationsViewModel
+@{
+    ViewData["Title"] = "Reserva tu Clase";
+    Layout = "_DashboardLayout";
+    
+    var difficulties = new List<string> { "Fácil", "Medio", "Difícil" };
+    var timeSlots = new List<(string Value, string Text)> 
+    { 
+        ("morning", "Mañana (6:00 - 12:00)"),
+        ("afternoon", "Tarde (12:00 - 18:00)"),
+        ("evening", "Noche (18:00 - 22:00)")
+    };
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 fw-bold text-purple-600">Reserva tu Clase</h1>
+    <div class="d-flex align-items-center">
+        <i class="fas fa-user-graduate text-success me-2"></i>
+        <span class="badge bg-success">Alumno</span>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="row g-4">
+    <!-- Filtros y Calendario -->
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title fw-bold text-purple-600">
+                    <i class="fas fa-filter me-2"></i>Filtros
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="filterForm" method="get" action="@Url.Action("Index", "Reservations")">
+                    <!-- Filtro de Dificultad -->
+                    <div class="mb-4">
+                        <label class="form-label fw-medium">Nivel de Dificultad</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button type="button" class="btn btn-sm @(Model.SelectedDifficulty == null ? "btn-purple" : "btn-outline-purple") filter-btn" data-filter="difficulty" data-value="">
+                                Todos
+                            </button>
+                            @foreach (var difficulty in difficulties)
+                            {
+                                <button type="button" class="btn btn-sm @(Model.SelectedDifficulty == difficulty ? "btn-purple" : "btn-outline-purple") filter-btn" data-filter="difficulty" data-value="@difficulty">
+                                    @if (difficulty == "Fácil")
+                                    {
+                                        <i class="far fa-smile me-1"></i>
+                                    }
+                                    else if (difficulty == "Medio")
+                                    {
+                                        <i class="far fa-meh me-1"></i>
+                                    }
+                                    else if (difficulty == "Difícil")
+                                    {
+                                        <i class="far fa-dizzy me-1"></i>
+                                    }
+                                    @difficulty
+                                </button>
+                            }
+                        </div>
+                        <input type="hidden" id="difficultyInput" name="difficulty" value="@Model.SelectedDifficulty" />
+                    </div>
+                    
+                    <!-- Filtro de Horario -->
+                    <div class="mb-4">
+                        <label class="form-label fw-medium">Horario</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button type="button" class="btn btn-sm @(Model.SelectedTimeSlot == null ? "btn-purple" : "btn-outline-purple") filter-btn" data-filter="timeSlot" data-value="">
+                                Todos
+                            </button>
+                            @foreach (var slot in timeSlots)
+                            {
+                                <button type="button" class="btn btn-sm @(Model.SelectedTimeSlot == slot.Value ? "btn-purple" : "btn-outline-purple") filter-btn" data-filter="timeSlot" data-value="@slot.Value">
+                                    @if (slot.Value == "morning")
+                                    {
+                                        <i class="fas fa-sun me-1"></i>
+                                    }
+                                    else if (slot.Value == "afternoon")
+                                    {
+                                        <i class="fas fa-cloud-sun me-1"></i>
+                                    }
+                                    else if (slot.Value == "evening")
+                                    {
+                                        <i class="fas fa-moon me-1"></i>
+                                    }
+                                    @slot.Text
+                                </button>
+                            }
+                        </div>
+                        <input type="hidden" id="timeSlotInput" name="timeSlot" value="@Model.SelectedTimeSlot" />
+                    </div>
+                    
+                    <!-- Botones de acción -->
+                    <div class="d-flex justify-content-between">
+                        <button type="button" id="clearFilters" class="btn btn-outline-secondary">
+                            <i class="fas fa-eraser me-2"></i>Limpiar Filtros
+                        </button>
+                        <button type="submit" class="btn btn-purple">
+                            <i class="fas fa-search me-2"></i>Aplicar Filtros
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Calendario -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title fw-bold text-purple-600">
+                    <i class="fas fa-calendar-alt me-2"></i>Selecciona una Fecha
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="datepicker" class="mb-3"></div>
+                <div class="text-center">
+                    <p class="mb-1 fw-medium">Fecha seleccionada:</p>
+                    <p class="text-purple-600 fw-bold" id="selectedDateDisplay">@Model.SelectedDate.ToString("dddd, d 'de' MMMM 'de' yyyy")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Clases Disponibles -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title fw-bold text-purple-600 mb-0">
+                    <i class="fas fa-list-alt me-2"></i>Clases Disponibles
+                </h5>
+                <div>
+                    <span class="badge bg-purple-600">@Model.AvailableClasses.Count clases encontradas</span>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (Model.AvailableClasses.Any())
+                {
+                    <div class="row g-3">
+                        @foreach (var cls in Model.AvailableClasses)
+                        {
+                            <div class="col-md-6">
+                                <div class="card h-100 hover-shadow class-card" data-id="@cls.Id">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h5 class="card-title text-purple-600 mb-0">@cls.Title</h5>
+                                            <span class="badge @cls.GetDifficultyBadgeClass()">
+                                                <i class="far @cls.GetDifficultyIcon() me-1"></i>@cls.Difficulty
+                                            </span>
+                                        </div>
+                                        <div class="mb-3">
+                                            <p class="card-text mb-1">
+                                                <i class="fas fa-user-tie text-muted me-2"></i>@cls.Instructor
+                                            </p>
+                                            <p class="card-text mb-1">
+                                                <i class="fas fa-clock text-muted me-2"></i>@cls.FullTimeDisplay
+                                            </p>
+                                            <p class="card-text mb-1">
+                                                <i class="fas fa-map-marker-alt text-muted me-2"></i>@cls.Location
+                                            </p>
+                                            <p class="card-text mb-1">
+                                                <i class="fas fa-users text-muted me-2"></i>
+                                                <span class="@(cls.AvailableSpots < 3 ? "text-danger fw-bold" : "")">
+                                                    @cls.AvailableSpots lugares disponibles
+                                                </span>
+                                            </p>
+                                        </div>
+                                        <p class="card-text small text-muted">@cls.Description</p>
+                                    </div>
+                                    <div class="card-footer bg-transparent border-top-0">
+                                        <button type="button" class="btn btn-purple w-100 reserve-btn" data-id="@cls.Id" data-bs-toggle="modal" data-bs-target="#confirmReservationModal">
+                                            <i class="fas fa-calendar-check me-2"></i>Reservar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                        <h5>No se encontraron clases con los filtros seleccionados</h5>
+                        <p class="text-muted">Intenta con otros filtros o selecciona otra fecha</p>
+                        <button id="resetFiltersBtn" class="btn btn-outline-purple mt-2">
+                            <i class="fas fa-redo me-2"></i>Restablecer Filtros
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmación de Reserva -->
+<div class="modal fade" id="confirmReservationModal" tabindex="-1" aria-labelledby="confirmReservationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmReservationModalLabel">Confirmar Reserva</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que deseas reservar esta clase?</p>
+                <div id="reservationDetails" class="p-3 bg-light rounded">
+                    <p class="mb-1"><strong>Clase:</strong> <span id="modalClassName"></span></p>
+                    <p class="mb-1"><strong>Instructor:</strong> <span id="modalInstructor"></span></p>
+                    <p class="mb-1"><strong>Horario:</strong> <span id="modalTime"></span></p>
+                    <p class="mb-0"><strong>Fecha:</strong> <span id="modalDate"></span></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="reserveForm" method="post" action="@Url.Action("Reserve", "Reservations")">
+                    <input type="hidden" id="classIdInput" name="classId" value="" />
+                    <button type="submit" class="btn btn-purple">Confirmar Reserva</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Inicializar datepicker
+            $('#datepicker').datepicker({
+                format: 'dd/mm/yyyy',
+                startDate: new Date(),
+                language: 'es',
+                todayHighlight: true,
+                autoclose: true
+            }).on('changeDate', function(e) {
+                // Actualizar el texto de la fecha seleccionada
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                const dateStr = e.date.toLocaleDateString('es-ES', options);
+                $('#selectedDateDisplay').text(dateStr);
+                
+                // Aquí se podría enviar el formulario para actualizar las clases según la fecha
+                // $('#filterForm').submit();
+            });
+            
+            // Manejar los botones de filtro
+            $('.filter-btn').click(function() {
+                const filter = $(this).data('filter');
+                const value = $(this).data('value');
+                
+                // Actualizar el input oculto
+                $(`#${filter}Input`).val(value);
+                
+                // Actualizar estilos de los botones
+                $(`.filter-btn[data-filter="${filter}"]`).removeClass('btn-purple').addClass('btn-outline-purple');
+                $(this).removeClass('btn-outline-purple').addClass('btn-purple');
+            });
+            
+            // Limpiar filtros
+            $('#clearFilters, #resetFiltersBtn').click(function() {
+                $('#difficultyInput, #timeSlotInput').val('');
+                $('.filter-btn[data-value=""]').removeClass('btn-outline-purple').addClass('btn-purple');
+                $('.filter-btn[data-value!=""]').removeClass('btn-purple').addClass('btn-outline-purple');
+                $('#filterForm').submit();
+            });
+            
+            // Manejar la selección de clase para reserva
+            $('.reserve-btn').click(function() {
+                const classId = $(this).data('id');
+                const card = $(this).closest('.class-card');
+                const className = card.find('.card-title').text();
+                const instructor = card.find('.card-text:eq(0)').text().trim();
+                const time = card.find('.card-text:eq(1)').text().trim();
+                const date = $('#selectedDateDisplay').text();
+                
+                // Actualizar el modal con los detalles de la clase
+                $('#modalClassName').text(className);
+                $('#modalInstructor').text(instructor);
+                $('#modalTime').text(time);
+                $('#modalDate').text(date);
+                $('#classIdInput').val(classId);
+                
+                // Resaltar la tarjeta seleccionada
+                $('.class-card').removeClass('selected-card');
+                card.addClass('selected-card');
+            });
+            
+            // Efecto hover para las tarjetas de clase
+            $('.class-card').hover(
+                function() { $(this).addClass('shadow-sm'); },
+                function() { $(this).removeClass('shadow-sm'); }
+            );
+        });
+    </script>
+}

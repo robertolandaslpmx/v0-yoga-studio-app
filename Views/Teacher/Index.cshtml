@@ -1,0 +1,150 @@
+@model YogaStudioApp.Controllers.TeacherDashboardViewModel
+@{
+    ViewData["Title"] = "Panel del Docente";
+    Layout = "_DashboardLayout";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 fw-bold text-purple-600">Bienvenido, @Model.TeacherName</h1>
+    <div class="d-flex align-items-center">
+        <i class="fas fa-chalkboard-teacher text-warning me-2"></i>
+        <span class="badge bg-warning text-dark">Docente</span>
+    </div>
+</div>
+
+<!-- Estadísticas del docente -->
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card h-100 border-start border-4 border-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title text-muted">Clases Programadas</h5>
+                        <h2 class="text-primary fw-bold">@Model.ScheduledClasses</h2>
+                        <small class="text-muted">Esta semana</small>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-calendar fa-2x text-primary"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card h-100 border-start border-4 border-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title text-muted">Total Estudiantes</h5>
+                        <h2 class="text-success fw-bold">@Model.TotalStudents</h2>
+                        <small class="text-muted">En tus clases</small>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-users fa-2x text-success"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card h-100 border-start border-4 border-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title text-muted">Horas Impartidas</h5>
+                        <h2 class="text-warning fw-bold">@Model.HoursThisMonth</h2>
+                        <small class="text-muted">Este mes</small>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-clock fa-2x text-warning"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Próximas clases -->
+<h2 class="h4 fw-bold text-purple-600 mb-3">Tus Próximas Clases</h2>
+
+<div class="mb-4">
+    @foreach (var cls in Model.UpcomingClasses)
+    {
+        <div class="card mb-3">
+            <div class="card-body p-4">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h3 class="h5 fw-medium text-purple-600">@cls.Title</h3>
+                        <p class="text-muted mb-1">@cls.Time</p>
+                        <p class="text-muted mb-1">@cls.Location</p>
+                        <p class="text-muted mb-0">Estudiantes: @cls.CurrentStudents</p>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-center justify-content-md-end mt-3 mt-md-0">
+                        <button class="btn btn-purple" onclick="viewClassDetails(@cls.Id)">Ver Detalles</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Acciones rápidas -->
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title fw-bold text-purple-600">
+                    <i class="fas fa-tasks me-2"></i>Acciones Rápidas
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-3">
+                    <a href="@Url.Action("Courses", "Teacher")" class="btn btn-purple">
+                        <i class="fas fa-book-open me-2"></i>Ver Mis Cursos
+                    </a>
+                    <a href="@Url.Action("Schedule", "Teacher")" class="btn btn-outline-purple">
+                        <i class="fas fa-calendar me-2"></i>Ver Mi Horario
+                    </a>
+                    <a href="@Url.Action("Index", "Profile")" class="btn btn-outline-purple">
+                        <i class="fas fa-user me-2"></i>Actualizar Perfil
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title fw-bold text-purple-600">
+                    <i class="fas fa-bullhorn me-2"></i>Anuncios para Docentes
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="p-3 bg-warning bg-opacity-10 rounded mb-3">
+                    <h6 class="fw-medium text-warning">
+                        <i class="fas fa-users me-2"></i>Reunión de Docentes
+                    </h6>
+                    <p class="small text-muted mb-0">Este viernes a las 17:00. Asistencia obligatoria.</p>
+                </div>
+                <div class="p-3 bg-info bg-opacity-10 rounded">
+                    <h6 class="fw-medium text-info">
+                        <i class="fas fa-file-alt me-2"></i>Nuevo Protocolo de Clases
+                    </h6>
+                    <p class="small text-muted mb-0">Se ha actualizado el protocolo de seguridad. Revisa tu email.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function viewClassDetails(classId) {
+            // Aquí iría la lógica para ver los detalles de la clase
+            alert(`Ver detalles de la clase ${classId}`);
+        }
+    </script>
+}

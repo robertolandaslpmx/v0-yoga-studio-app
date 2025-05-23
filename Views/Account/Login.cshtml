@@ -1,0 +1,231 @@
+@model YogaStudioApp.Models.LoginViewModel
+@{
+    ViewData["Title"] = "Iniciar Sesión";
+    Layout = "_Layout";
+}
+
+<div class="min-h-screen d-flex align-items-center justify-content-center bg-purple-50 p-4">
+    <div class="row w-100" style="max-width: 1200px;">
+        <!-- Formulario de Login -->
+        <div class="col-lg-6 mb-4 mb-lg-0">
+            <div class="card h-100">
+                <div class="card-header text-center">
+                    <h2 class="card-title h4 fw-bold text-purple-600">Iniciar Sesión</h2>
+                    <p class="card-text text-muted">Ingresa tus credenciales para acceder a tu cuenta</p>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Login" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control" placeholder="tu@email.com" required />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label"></label>
+                            <input asp-for="Password" class="form-control" required />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input asp-for="RememberMe" class="form-check-input" />
+                            <label asp-for="RememberMe" class="form-check-label"></label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-purple w-100">Iniciar Sesión</button>
+                    </form>
+                </div>
+                <div class="card-footer text-center">
+                    <div class="small mb-2">
+                        <a href="#" class="text-purple-600 hover-underline">¿Olvidaste tu contraseña?</a>
+                    </div>
+                    <div class="small">
+                        ¿No tienes una cuenta? <a href="@Url.Action("Register", "Account")" class="text-purple-600 hover-underline">Regístrate</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Credenciales de Prueba -->
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h3 class="card-title h5 fw-bold text-purple-600">
+                        <i class="fas fa-key me-2"></i>Credenciales de Prueba
+                    </h3>
+                    <p class="card-text text-muted mb-0">Utiliza estas credenciales para probar diferentes roles</p>
+                </div>
+                <div class="card-body">
+                    <!-- Administrador -->
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-user-shield text-danger me-2"></i>
+                            <h4 class="h6 fw-bold text-danger mb-0">Administrador</h4>
+                        </div>
+                        <div class="bg-light p-3 rounded">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <strong>Email:</strong><br>
+                                    <code class="text-dark">admin@yogastudio.com</code>
+                                </div>
+                                <div class="col-sm-6">
+                                    <strong>Contraseña:</strong><br>
+                                    <code class="text-dark">Admin123!</code>
+                                </div>
+                            </div>
+                            <small class="text-muted">Acceso completo al sistema, gestión de cursos y maestros</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Docentes -->
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-chalkboard-teacher text-warning me-2"></i>
+                            <h4 class="h6 fw-bold text-warning mb-0">Docentes</h4>
+                        </div>
+                        
+                        <!-- María González -->
+                        <div class="bg-light p-3 rounded mb-2">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <strong>Email:</strong><br>
+                                    <code class="text-dark">maria.gonzalez@yogastudio.com</code>
+                                </div>
+                                <div class="col-sm-6">
+                                    <strong>Contraseña:</strong><br>
+                                    <code class="text-dark">Docente123!</code>
+                                </div>
+                            </div>
+                            <small class="text-muted">María González - Yoga para principiantes y Hatha Yoga</small>
+                        </div>
+                        
+                        <!-- Carlos Rodríguez -->
+                        <div class="bg-light p-3 rounded mb-2">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <strong>Email:</strong><br>
+                                    <code class="text-dark">carlos.rodriguez@yogastudio.com</code>
+                                </div>
+                                <div class="col-sm-6">
+                                    <strong>Contraseña:</strong><br>
+                                    <code class="text-dark">Docente123!</code>
+                                </div>
+                            </div>
+                            <small class="text-muted">Carlos Rodríguez - Hatha Yoga Avanzado</small>
+                        </div>
+                        
+                        <!-- Ana López -->
+                        <div class="bg-light p-3 rounded">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <strong>Email:</strong><br>
+                                    <code class="text-dark">ana.lopez@yogastudio.com</code>
+                                </div>
+                                <div class="col-sm-6">
+                                    <strong>Contraseña:</strong><br>
+                                    <code class="text-dark">Docente123!</code>
+                                </div>
+                            </div>
+                            <small class="text-muted">Ana López - Meditación y Mindfulness</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Alumnos -->
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-user-graduate text-success me-2"></i>
+                            <h4 class="h6 fw-bold text-success mb-0">Alumnos</h4>
+                        </div>
+                        
+                        <!-- Juan Pérez -->
+                        <div class="bg-light p-3 rounded mb-2">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <strong>Email:</strong><br>
+                                    <code class="text-dark">juan.perez@email.com</code>
+                                </div>
+                                <div class="col-sm-6">
+                                    <strong>Contraseña:</strong><br>
+                                    <code class="text-dark">Alumno123!</code>
+                                </div>
+                            </div>
+                            <small class="text-muted">Juan Pérez - Plan Mensual</small>
+                        </div>
+                        
+                        <!-- Laura Martínez -->
+                        <div class="bg-light p-3 rounded mb-2">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <strong>Email:</strong><br>
+                                    <code class="text-dark">laura.martinez@email.com</code>
+                                </div>
+                                <div class="col-sm-6">
+                                    <strong>Contraseña:</strong><br>
+                                    <code class="text-dark">Alumno123!</code>
+                                </div>
+                            </div>
+                            <small class="text-muted">Laura Martínez - Plan Trimestral</small>
+                        </div>
+                        
+                        <!-- Sofía García -->
+                        <div class="bg-light p-3 rounded">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <strong>Email:</strong><br>
+                                    <code class="text-dark">sofia.garcia@email.com</code>
+                                </div>
+                                <div class="col-sm-6">
+                                    <strong>Contraseña:</strong><br>
+                                    <code class="text-dark">Alumno123!</code>
+                                </div>
+                            </div>
+                            <small class="text-muted">Sofía García - Plan Anual</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="alert alert-info mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Nota:</strong> Estas son credenciales de prueba para demostración. 
+                        En un entorno de producción, las contraseñas estarían encriptadas y almacenadas de forma segura.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Función para copiar credenciales al formulario
+            $('.bg-light').click(function() {
+                const email = $(this).find('code').first().text();
+                const password = $(this).find('code').last().text();
+                
+                $('#Email').val(email);
+                $('#Password').val(password);
+                
+                // Agregar efecto visual
+                $(this).addClass('border border-purple-300');
+                setTimeout(() => {
+                    $(this).removeClass('border border-purple-300');
+                }, 1000);
+            });
+            
+            // Agregar cursor pointer a las credenciales
+            $('.bg-light').css('cursor', 'pointer');
+            
+            // Tooltip para indicar que se puede hacer clic
+            $('.bg-light').attr('title', 'Haz clic para usar estas credenciales');
+            
+            // Inicializar tooltips de Bootstrap
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+}
